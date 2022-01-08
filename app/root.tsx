@@ -1,3 +1,5 @@
+import { CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material'
+import * as React from 'react'
 import {
   Links,
   LiveReload,
@@ -6,13 +8,42 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'remix'
+import styles from './styles.css'
 import type { MetaFunction } from 'remix'
+import { createTheme } from './theme'
 
 export const meta: MetaFunction = () => {
-  return { title: 'New Remix App' }
+  return { title: 'Yahiko', description: 'Write and share documents.' }
+}
+
+export function links() {
+  return [
+    {
+      rel: 'stylesheet',
+      href: styles,
+    },
+  ]
 }
 
 export default function App() {
+  const prefersLightMode = useMediaQuery('(prefers-color-scheme: light)')
+
+  const theme = React.useMemo(
+    () => createTheme({ prefersLightMode }),
+    [prefersLightMode]
+  )
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Document>
+        <Outlet />
+      </Document>
+    </ThemeProvider>
+  )
+}
+
+function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -22,7 +53,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
